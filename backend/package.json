@@ -1,0 +1,16 @@
+{
+  "name": "shiftbooking-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.10",
+    "luxon": "^3.5.0",
+    "uuid": "^10.0.0"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "ISC"
+}

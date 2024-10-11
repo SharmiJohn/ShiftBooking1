@@ -1,24 +1,29 @@
-import logo from './logo.svg';
+
 import './App.css';
 
+import {BrowserRouter,Routes,Route,Link} from 'react-router-dom'
+import MyShift from './Pages/MyShift';
+import AvailableShift from './Pages/AvailableShift';
+import { useState } from 'react';
 function App() {
+  const [activeLink,setactiveLink]=useState("/MyShift");
+  const handleClick=(link)=>{
+    setactiveLink(link);
+
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+     <nav className='App'>
+      <Link to="/MyShift" onClick={()=>handleClick('/MyShift')} className={activeLink==='/MyShift'?"active":" "}>My Shift </Link>
+      
+      <Link to="/AvailableShift" onClick={()=>handleClick('/AvailableShift')}  className={activeLink==='/AvailableShift'?"active":" "}> Available Shift</Link>
+     </nav>
+     <Routes>
+      <Route path="/MyShift" element={<MyShift/>}/>
+      <Route path="/AvailableShift" element={<AvailableShift/>}/>
+     </Routes>
+    </BrowserRouter>
+    
   );
 }
 
