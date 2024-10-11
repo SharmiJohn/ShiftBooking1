@@ -5,13 +5,13 @@ function AvailableList({ shifts, onShiftAction, bookedShiftIds }) {
     const [loadingStates, setLoadingStates] = useState({});
     const currentTime = new Date();
 
-    // Log whenever `bookedShiftIds` changes to confirm state updates
+    
     useEffect(() => {
         console.log("Updated bookedShiftIds:", bookedShiftIds);
     }, [bookedShiftIds]);
 
     const handleClick = async (shiftId, action) => {
-        // Set loading for this specific shift
+        
         setLoadingStates(prev => ({ ...prev, [shiftId]: true }));
 
         const success = await onShiftAction(shiftId, action);
@@ -42,24 +42,24 @@ function AvailableList({ shifts, onShiftAction, bookedShiftIds }) {
                             );
                         });
 
-                        // Determine button text and action based on shift state
+                     
                         let buttonText = "Book";
                         let isDisabled = false;
                         let buttonAction = "book";
 
-                        // Logic to determine button state
+                        
                         if (isAlreadyBooked) {
-                            buttonText = "Booked";  // Show "Booked" if already booked
-                            isDisabled = true; // Disable booking action for already booked shifts
+                            buttonText = "Booked"; 
+                            isDisabled = true; 
                         } else if (isShiftStarted) {
-                            buttonText = "Started"; // Show "Started" if the shift has started
+                            buttonText = "Cancel"; // Show "Started" if the shift has started
                             isDisabled = true; // Disable booking action for started shifts
                         } else if (hasOverlap) {
                             buttonText = "Overlapping"; // Show "Overlapping" if there's an overlap
-                            isDisabled = true; // Disable booking action for overlapping shifts
+                            isDisabled = true; 
                         }
 
-                        const loading = loadingStates[shift.id] || false; // Get loading state for this shift
+                        const loading = loadingStates[shift.id] || false; 
 
                         return (
                             <li key={shift.id} style={{ marginBottom: '16px' }}>
