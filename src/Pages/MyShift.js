@@ -13,31 +13,37 @@ function MyShift() {
   const [tomorrowShift, setTomorrowShift] = useState({ totalShifts: 0, totalHours: 0 });
 
   useEffect(() => {
+    // Fetch all shifts
     fetch("http://localhost:8080/shifts")
       .then(res => res.json())
-      .then(data => Allshift(data))
+    
+      .then(data => filterBookedShifts(data))
+
       .catch(error => console.log('Error:', error));
   }, []);
 
-  const Allshift = (shifts) => {
+  const filterBookedShifts = (shifts) => {
     const todayShifts = [];
     const tomorrowShifts = [];
     const futureShifts = {};
 
     shifts.forEach(shift => {
-      const { startTime, endTime } = shift;
+      const { startTime, endTime, booked} = shift; // Ensure the booking property is included
       const shiftDate = parseISO(new Date(startTime).toISOString());
 
-      if (isToday(shiftDate)) {
-        todayShifts.push(shift);
-      } else if (isTomorrow(shiftDate)) {
-        tomorrowShifts.push(shift);
-      } else if (isFuture(shiftDate)) {
-        const formattedDate = format(shiftDate, 'MMMM dd');
-        if (!futureShifts[formattedDate]) {
-          futureShifts[formattedDate] = [];
+      // Check if the shift is booked
+      if (booked) {
+        if (isToday(shiftDate)) {
+          todayShifts.push(shift);
+        } else if (isTomorrow(shiftDate)) {
+          tomorrowShifts.push(shift);
+        } else if (isFuture(shiftDate)) {
+          const formattedDate = format(shiftDate, 'MMMM dd');
+          if (!futureShifts[formattedDate]) {
+            futureShifts[formattedDate] = [];
+          }
+          futureShifts[formattedDate].push(shift);
         }
-        futureShifts[formattedDate].push(shift);
       }
     });
 
@@ -61,6 +67,7 @@ function MyShift() {
 
     return { totalShifts, totalHours };
   };
+
   const cancelShift = (shiftId) => {
     fetch(`http://localhost:8080/shifts/${shiftId}`, { method: 'DELETE' })
       .then(res => {
@@ -80,22 +87,21 @@ function MyShift() {
       })
       .catch(error => console.error('Error deleting shift:', error));
   };
-  
 
   return (
-    <Card style={{ boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', marginBottom: '20px' ,borderRadius: '16px',border:"1px solid #A4B8D3"}}>
-      <CardContent style={{padding:"0px"}}>
+    <Card style={{ boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', marginBottom: '20px', borderRadius: '16px', border: "1px solid #A4B8D3" }}>
+      <CardContent style={{ padding: "0px" }}>
         <Box mb={2}>
-          <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600 ,background:' #F1F4F8',padding:"15px"}}>
-            Today <span style={{color:"#CBD2E1",fontWeight:"200",fontSize:"15px"}}>  {todayShift.totalShifts} {todayShift.totalShifts === 1 ? 'shift' : 'shifts'}, {todayShift.totalHours}h</span>
+          <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600, background: '#F1F4F8', padding: "15px" }}>
+            Today <span style={{ color: "#CBD2E1", fontWeight: "200", fontSize: "15px" }}>  {todayShift.totalShifts} {todayShift.totalShifts === 1 ? 'shift' : 'shifts'}, {todayShift.totalHours}h</span>
           </Typography>
           <Divider style={{ width: '100%' }} />
           <ShiftList shifts={bookedShifts.today} cancelShift={cancelShift} />
         </Box>
 
         <Box mb={2}>
-          <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600 ,background:'#F1F4F8 ',padding:"15px"}}>
-            Tomorrow <span style={{color:"#CBD2E1",fontWeight:"200",fontSize:"15px"}}>  {tomorrowShift.totalShifts} {tomorrowShift.totalShifts === 1 ? 'shift' : 'shifts'}, {tomorrowShift.totalHours} h</span> 
+          <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600, background: '#F1F4F8 ', padding: "15px" }}>
+            Tomorrow <span style={{ color: "#CBD2E1", fontWeight: "200", fontSize: "15px" }}>  {tomorrowShift.totalShifts} {tomorrowShift.totalShifts === 1 ? 'shift' : 'shifts'}, {tomorrowShift.totalHours} h</span>
           </Typography>
           <Divider style={{ width: '100%' }} />
           <ShiftList shifts={bookedShifts.tomorrow} cancelShift={cancelShift} />
@@ -107,8 +113,8 @@ function MyShift() {
             const { totalShifts, totalHours } = calculateShiftAndHours(futureShiftsForDate);
             return (
               <Box key={date} mb={2}>
-                <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600,background:'#F1F4F8',padding:"15px" }}>
-                  {date}<span style={{color:"#CBD2E1",fontWeight:"200",fontSize:"15px"}}>  {totalShifts} {totalShifts === 1 ? 'shift' : 'shifts'}, {totalHours}h</span>
+                <Typography variant="h6" style={{ color: '#4F6C92', fontWeight: 600, background: '#F1F4F8', padding: "15px" }}>
+                  {date}<span style={{ color: "#CBD2E1", fontWeight: "200", fontSize: "15px" }}>  {totalShifts} {totalShifts === 1 ? 'shift' : 'shifts'}, {totalHours}h</span>
                 </Typography>
                 <Divider style={{ width: '100%' }} />
                 <ShiftList shifts={futureShiftsForDate} cancelShift={cancelShift} />

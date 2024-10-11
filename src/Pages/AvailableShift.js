@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Divider, Box, Button, Snackbar, CircularProgress } from '@mui/material';
+import { Card, CardContent, Typography, Divider, Box, Button, Snackbar } from '@mui/material';
 import AvailableList from '../Components/AvailableList';
 import MuiAlert from '@mui/material/Alert';
 import { format, isToday, isTomorrow, isFuture, parseISO } from 'date-fns';
@@ -16,7 +16,6 @@ function AvailableShifts() {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [bookedShiftIds, setBookedShiftIds] = useState([]);
   const [cities, setCities] = useState({});
-  const [loading, setLoading] = useState(false); // State for loading
 
   useEffect(() => {
     fetch("http://localhost:8080/shifts")
@@ -73,13 +72,11 @@ function AvailableShifts() {
 
   const handleShiftAction = async (shiftId, action) => {
     const shift = availableShifts.today.concat(availableShifts.tomorrow, Object.values(availableShifts.future).flat())
-      .find(s => s.id === shiftId); // Find the shift object
+      .find(s => s.id === shiftId);
 
     const url = action === 'cancel' 
       ? `http://localhost:8080/shifts/${shiftId}/cancel` 
       : `http://localhost:8080/shifts/${shiftId}/book`;
-
-    setLoading(true); // Start loading
 
     try {
       const response = await fetch(url, {
@@ -87,10 +84,9 @@ function AvailableShifts() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(shift), // Send the entire shift object
+        body: JSON.stringify(shift),
       });
       const data = await response.json();
-      console.log(data);
       
       if (data.success) {
         if (action === 'cancel') {
@@ -110,7 +106,6 @@ function AvailableShifts() {
       setSnackbarMessage('Error updating shift.');
       setSnackbarSeverity('error');
     } finally {
-      setLoading(false); // Stop loading
       setSnackbarOpen(true);
     }
   };
@@ -183,7 +178,6 @@ function AvailableShifts() {
                   shifts={filteredShifts.today}
                   onShiftAction={handleShiftAction} 
                   bookedShiftIds={bookedShiftIds} 
-                  loading={loading} // Pass loading state to AvailableList if needed
                 />
               </Box>
             )}
@@ -198,7 +192,6 @@ function AvailableShifts() {
                   shifts={filteredShifts.tomorrow}
                   onShiftAction={handleShiftAction} 
                   bookedShiftIds={bookedShiftIds} 
-                  loading={loading} // Pass loading state to AvailableList if needed
                 />
               </Box>
             )}
@@ -224,12 +217,10 @@ function AvailableShifts() {
         )}
       </CardContent>
       <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
-
-     
     </Card>
   );
 }
