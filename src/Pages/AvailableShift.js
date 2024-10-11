@@ -216,11 +216,7 @@ function AvailableShifts() {
           </Box>
         )}
       </CardContent>
-      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      
     </Card>
   );
 }

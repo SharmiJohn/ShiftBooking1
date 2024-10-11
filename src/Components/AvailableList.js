@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Divider, Button, Typography, CircularProgress } from '@mui/material';
 
 function AvailableList({ shifts, onShiftAction, bookedShiftIds }) {
-    console.log(bookedShiftIds);
     const [loadingStates, setLoadingStates] = useState({});
     const currentTime = new Date();
 
@@ -16,14 +15,9 @@ function AvailableList({ shifts, onShiftAction, bookedShiftIds }) {
         setLoadingStates(prev => ({ ...prev, [shiftId]: true }));
 
         const success = await onShiftAction(shiftId, action);
-
+        
         // Reset loading for this specific shift
         setLoadingStates(prev => ({ ...prev, [shiftId]: false }));
-
-        // Alert if action was not successful
-        if (!success) {
-            alert("Action failed. Please try again.");
-        }
     };
 
     return (
@@ -91,7 +85,7 @@ function AvailableList({ shifts, onShiftAction, bookedShiftIds }) {
                                             textTransform: "none",
                                             cursor: isDisabled ? 'not-allowed' : 'pointer',
                                         }}
-                                        disabled={isDisabled || loading}
+                                        disabled={isDisabled || loading} // Combined disabled condition
                                     >
                                         {loading ? <CircularProgress size={24} /> : buttonText}
                                     </Button>
